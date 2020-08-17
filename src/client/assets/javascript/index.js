@@ -1,7 +1,7 @@
 // PROVIDED CODE BELOW (LINES 1 - 80) DO NOT REMOVE
 
 // The store will hold all information needed globally
-var store = {
+let store = {
     track_id: undefined,
     player_id: undefined,
     race_id: undefined,
@@ -350,28 +350,26 @@ function defaultFetchOpts() {
 
 function getTracks() {
     // GET request to `${SERVER}/api/tracks`
-    try {
-        return fetch(`${SERVER}/api/tracks`, {
-            ...defaultFetchOpts(),
-            method: "GET",
-        }).then((res) => res.json());
-    } catch (error) {
-        alert("An Error Occurred. Check if your server is running");
-        return {};
-    }
+    return fetch(`${SERVER}/api/tracks`, {
+        ...defaultFetchOpts(),
+        method: "GET",
+    })
+        .then((res) => res.json())
+        .catch((error) => {
+            console.error(error);
+        });
 }
 
 function getRacers() {
     // GET request to `${SERVER}/api/cars`
-    try {
-        return fetch(`${SERVER}/api/cars`, {
-            ...defaultFetchOpts(),
-            method: "GET",
-        }).then((res) => res.json());
-    } catch (error) {
-        alert("An Error Occurred. Check if your server is running");
-        return {};
-    }
+    return fetch(`${SERVER}/api/cars`, {
+        ...defaultFetchOpts(),
+        method: "GET",
+    })
+        .then((res) => res.json())
+        .catch((error) => {
+            console.error(error);
+        });
 }
 
 function createRace(player_id, track_id) {
@@ -395,6 +393,8 @@ function getRace(id) {
     return fetch(`${SERVER}/api/races/${id}`, {
         ...defaultFetchOpts(),
         method: "GET",
+    }).catch((err) => {
+        console.log("Problem with getRace request::", err);
     });
 }
 
@@ -402,6 +402,8 @@ function startRace(id) {
     return fetch(`${SERVER}/api/races/${id}/start`, {
         ...defaultFetchOpts(),
         method: "POST",
+    }).catch((err) => {
+        console.log("Problem with startRace request::", err);
     });
 }
 
@@ -412,5 +414,7 @@ function accelerate(id) {
     return fetch(`${SERVER}/api/races/${id}/accelerate`, {
         ...defaultFetchOpts(),
         method: "POST",
+    }).catch((err) => {
+        console.log("Problem with accelerate request::", err);
     });
 }
