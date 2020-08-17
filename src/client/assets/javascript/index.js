@@ -102,39 +102,43 @@ async function handleCreateRace() {
     await runRace(race_id - 1);
 }
 
-function runRace(raceID) {
-    return new Promise((resolve) => {
-        // TODO - use Javascript's built in setInterval method to get race info every 500ms
-        const raceInterval = setInterval(async () => {
-            await fetch(`${SERVER}/api/races/${raceID}`, {
-                method: "GET",
-                mode: "cors",
-            })
-                .then((res) => res.json())
-                .then((res) => {
-                    /* 
+async function runRace(raceID) {
+    try {
+        return new Promise((resolve) => {
+            // TODO - use Javascript's built in setInterval method to get race info every 500ms
+            const raceInterval = setInterval(async () => {
+                await fetch(`${SERVER}/api/races/${raceID}`, {
+                    method: "GET",
+                    mode: "cors",
+                })
+                    .then((res) => res.json())
+                    .then((res) => {
+                        /* 
 					TODO - if the race info status property is "in-progress", update the leaderboard by calling:
 
 					renderAt('#leaderBoard', raceProgress(res.positions))
 				*/
-                    /* 
+                        /* 
 					TODO - if the race info status property is "finished", run the following:
 
 					clearInterval(raceInterval) // to stop the interval from repeating
 					renderAt('#race', resultsView(res.positions)) // to render the results view
 					reslove(res) // resolve the promise
 				*/
-                    if (res.status === "in-progress") {
-                        renderAt("#leaderBoard", raceProgress(res.positions));
-                    } else if (res.status === "finished") {
-                        clearInterval(raceInterval);
-                        renderAt("#race", resultsView(res.positions));
-                        resolve(res);
-                    }
-                });
-        }, 1000);
-    });
-    // remember to add error handling for the Promise
+                        if (res.status === "in-progress") {
+                            renderAt("#leaderBoard", raceProgress(res.positions));
+                        } else if (res.status === "finished") {
+                            clearInterval(raceInterval);
+                            renderAt("#race", resultsView(res.positions));
+                            resolve(res);
+                        }
+                    });
+            }, 1000);
+        });
+        // remember to add error handling for the Promise
+    } catch (error) {
+        console.error(error);
+    }
 }
 
 async function runCountdown() {
@@ -156,7 +160,7 @@ async function runCountdown() {
             }, 1000);
         });
     } catch (error) {
-        console.log(error);
+        console.error(error);
     }
 }
 
@@ -384,7 +388,7 @@ function createRace(player_id, track_id) {
         body: JSON.stringify(body),
     })
         .then((res) => res.json())
-        .catch((err) => console.log("Problem with createRace request::", err));
+        .catch((err) => console.error("Problem with createRace request::", err));
 }
 
 //where is this needed
@@ -394,11 +398,11 @@ function getRace(id) {
         ...defaultFetchOpts(),
         method: "GET",
     }).catch((err) => {
-        console.log("Problem with getRace request::", err);
+        console.error("Problem with getRace request::", err);
     });
 }
 
-function startRace(id) {
+async function startRace(id) {
     return fetch(`${SERVER}/api/races/${id}/start`, {
         ...defaultFetchOpts(),
         method: "POST",
